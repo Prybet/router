@@ -1,0 +1,10 @@
+{
+  "name": "@prybet/router",
+  "version": "0.1.0",
+  "license": "MIT",
+  "exports": "./src/router.ts",
+  "imports": {
+    "@std/route": "jsr:@std/http/unstable-route",
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
