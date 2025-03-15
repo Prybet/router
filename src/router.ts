@@ -20,6 +20,11 @@ type Handler = (
 ) => Promise<Response> | Response;
 
 /**
+ * Set of HTTP status codes that should not have a response body.
+ */
+const empties = new Set([204, 304]);
+
+/**
  * Router class for handling HTTP routes.
  */
 export class Router {
@@ -156,7 +161,7 @@ export class Router {
  */
 class ResponseBuilder {
   private headers: Headers;
-  private statusCode: number = 200;
+  private code: number = 200;
 
   constructor() {
     this.headers = new Headers(Router.HEADERS);
@@ -168,7 +173,7 @@ class ResponseBuilder {
    * @returns Current instance for chaining.
    */
   status(code: number): this {
-    this.statusCode = code;
+    this.code = code;
     return this;
   }
 
@@ -188,10 +193,10 @@ class ResponseBuilder {
    * @param data Response body.
    * @returns A Response object.
    */
-  send(data: unknown = ""): Response {
+  send(data: unknown = null): Response {
     const body = typeof data === "object" ? JSON.stringify(data) : String(data);
-    return new Response(body, {
-      status: this.statusCode,
+    return new Response(empties.has(this.code) ? undefined : body, {
+      status: this.code,
       headers: this.headers,
     });
   }
