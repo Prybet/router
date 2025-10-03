@@ -1,5 +1,5 @@
-import { route, type Route } from "@std/route";
-import { serveDir, type ServeDirOptions } from "@std/file-server";
+import { route, type Route } from "@std/http/unstable-route";
+import { serveDir, type ServeDirOptions } from "@std/http/file-server";
 
 /**
  * Type definition for a route handler function.
