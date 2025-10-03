@@ -1,8 +1,5 @@
-import { route, type Route } from "jsr:@std/http@1.0.13/unstable-route";
-import {
-  serveDir,
-  type ServeDirOptions,
-} from "jsr:@std/http@1.0.13/file-server";
+import { route, type Route } from "@std/route";
+import { serveDir, type ServeDirOptions } from "@std/file-server";
 
 /**
  * Type definition for a route handler function.
@@ -23,6 +20,25 @@ type Handler = (
  * Set of HTTP status codes that should not have a response body.
  */
 const empties = new Set([204, 304]);
+
+/**
+ * Checks if data is a binary type that can be sent directly.
+ */
+const isBinary = (data: unknown): boolean => {
+  return (
+    data instanceof ArrayBuffer ||
+    data instanceof Uint8Array ||
+    data instanceof Uint16Array ||
+    data instanceof Uint32Array ||
+    data instanceof Int8Array ||
+    data instanceof Int16Array ||
+    data instanceof Int32Array ||
+    data instanceof Float32Array ||
+    data instanceof Float64Array ||
+    data instanceof Blob ||
+    data instanceof ReadableStream
+  );
+};
 
 /**
  * Router class for handling HTTP routes.
@@ -194,8 +210,14 @@ class ResponseBuilder {
    * @returns A Response object.
    */
   send(data: unknown = null): Response {
-    const body = typeof data === "object" ? JSON.stringify(data) : String(data);
-    return new Response(empties.has(this.code) ? undefined : body, {
+    if (empties.has(this.code))
+      return new Response(undefined, {
+        status: this.code,
+        headers: this.headers,
+      });
+
+    const body = isBinary(data) ? data : JSON.stringify(data);
+    return new Response(body as BodyInit, {
       status: this.code,
       headers: this.headers,
     });

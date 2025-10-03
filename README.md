@@ -43,6 +43,12 @@ app.get("/users/:id", (_, res, params) => res.send({ userId: params?.id }));
 // Route to handle query parameters (?key=value)
 app.get("/search", (_, res, __, queries) => res.send({ query: queries }));
 
+// Route to send binary data (PDF, images, etc.)
+app.get("/pdf", async (_, res) => {
+  const pdf = await Deno.readFile("./example.pdf");
+  return res.setHeader("Content-Type", "application/pdf").send(pdf.buffer);
+});
+
 app.cors(); // Enable CORS
 
 Deno.serve({ port: 9090 }, (req) => app.handler(req));
@@ -66,4 +72,4 @@ deno test --allow-net
 
 MIT
 
-<small>This README.md document was created with the help of ChatGPT.</small>
+<small>This README.md document was created with the help of AI.</small>
