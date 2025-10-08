@@ -216,7 +216,12 @@ class ResponseBuilder {
         headers: this.headers,
       });
 
-    const body = isBinary(data) ? data : JSON.stringify(data);
+    const body = isBinary(data)
+      ? data
+      : typeof data === "object"
+      ? JSON.stringify(data)
+      : String(data);
+
     return new Response(body as BodyInit, {
       status: this.code,
       headers: this.headers,

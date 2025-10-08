@@ -108,3 +108,27 @@ Deno.test("GET route should send Blob correctly", async () => {
   assertEquals(response.headers.get("Content-Type"), "text/plain");
   assertEquals(response.status, 200);
 });
+
+Deno.test(
+  "GET route should send string/SVG without JSON.stringify",
+  async () => {
+    const app = new Router();
+
+    app.get("/svg", (_, res) => {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40"/></svg>`;
+      return res.setHeader("Content-Type", "image/svg+xml").send(svg);
+    });
+
+    const request = new Request("http://localhost/svg");
+    const response = await app.handler(request);
+
+    const text = await response.text();
+
+    assertEquals(
+      text,
+      `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40"/></svg>`
+    );
+    assertEquals(response.headers.get("Content-Type"), "image/svg+xml");
+    assertEquals(response.status, 200);
+  }
+);
