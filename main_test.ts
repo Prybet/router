@@ -132,3 +132,18 @@ Deno.test(
     assertEquals(response.status, 200);
   }
 );
+
+Deno.test("PATCH route should respond correctly", async () => {
+  const app = new Router();
+
+  app.patch("/users/:id", (_req, res) => {
+    return res.send({ updated: true });
+  });
+
+  const request = new Request("http://localhost/users/42", { method: "PATCH" });
+  const response = await app.handler(request);
+
+  assertEquals(await response.json(), { updated: true });
+  assertEquals(response.headers.get("Content-Type"), "application/json");
+  assertEquals(response.status, 200);
+});

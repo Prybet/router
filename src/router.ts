@@ -84,6 +84,15 @@ export class Router {
   }
 
   /**
+   * Registers a PATCH route.
+   * @param path Route path.
+   * @param handler Route handler function.
+   */
+  patch(path: string, handler: Handler) {
+    this.addRoute("PATCH", path, handler);
+  }
+
+  /**
    * Registers a DELETE route.
    * @param path Route path.
    * @param handler Route handler function.
